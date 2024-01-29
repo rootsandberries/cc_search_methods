@@ -28,14 +28,14 @@ levels(ccmethods_data$db_list_gp) <- c("some", "some", "all") #Recode to new val
 levels(ccmethods_data$db_list_gp) #Print new levels
 
 #Create subset of needed variables only
-db1_subset <- ccmethods_data[, c("db_list_gp", "db_platform", "date_range", "gray_url", "gray_list")]
+db1_subset <- ccmethods_data[, c("db_list_gp", "db_platform", "date_range", "grey_url", "grey_list")]
 
 #Convert all to factors and set level orders
 db1_subset$db_platform <- factor(db1_subset$db_platform, levels=ordered(c("all", "some", "none")))
 db1_subset$date_range <- factor(db1_subset$date_range, levels=ordered(c("all", "some", "none")))
 db1_subset$db_list_gp <- factor(db1_subset$db_list_gp, levels=ordered(c("all", "some", "none")))
-db1_subset$gray_list <- factor(db1_subset$gray_list, levels=ordered(c("all", "some", "none", NA)))
-db1_subset$gray_url <- factor(db1_subset$gray_url, levels=ordered(c("all", "some", "none", NA)))
+db1_subset$grey_list <- factor(db1_subset$grey_list, levels=ordered(c("all", "some", "none", NA)))
+db1_subset$grey_url <- factor(db1_subset$grey_url, levels=ordered(c("all", "some", "none", NA)))
 
 #Recode to Full, Partial and None
 db1_subset$db_platform <- db1_subset$db_platform %>% 
@@ -59,17 +59,17 @@ db1_subset$db_list_gp <- db1_subset$db_list_gp %>%
     some = "Partial",
     none = "None")
 
-db1_subset$gray_list <- db1_subset$gray_list %>% 
+db1_subset$grey_list <- db1_subset$grey_list %>% 
   factor(levels=ordered(c("all", "some", "none"))) %>% 
   recode_factor( 
     all = "Full", 
     some = "Partial",
     none = "None")
 
-#How many reviews provided a full list of gray literature sources?
-summary(db1_subset$gray_list) #73
+#How many reviews provided a full list of grey literature sources?
+summary(db1_subset$grey_list) #73
 
-db1_subset$gray_url <- db1_subset$gray_url %>% 
+db1_subset$grey_url <- db1_subset$grey_url %>% 
   factor(levels=ordered(c("all", "some", "none"))) %>% 
   recode_factor( 
     all = "Full", 
@@ -86,7 +86,7 @@ db_counts <- db_long %>%
   count()
 
 # Define the desired order of the groups
-var_order <- c("db_list_gp", "db_platform", "date_range", "gray_list", "gray_url")
+var_order <- c("db_list_gp", "db_platform", "date_range", "grey_list", "grey_url")
 
 # Convert the groups to a factor with the desired order and recode
 db_counts$variable_name_ordered <- factor(db_counts$variable_name, levels = var_order)
@@ -94,8 +94,8 @@ db_counts$variable_name_ordered <- recode_factor(db_counts$variable_name_ordered
                                                  db_list_gp = "Databases and sub-databases", 
                                                  db_platform = "Database platforms",
                                                  date_range = "Database date ranges",
-                                                 gray_list = "Gray literature sources",
-                                                 gray_url = "Website URLs")
+                                                 grey_list = "grey literature sources",
+                                                 grey_url = "Website URLs")
 
 #Define order of values
 db_counts$value <- factor(db_counts$value, levels = ordered(c("Full", "Partial", "None", NA)))
@@ -106,7 +106,7 @@ my_colors <- c("green", "yellow", "red")
 #Plot stacked grouped bar chart
 pt_source_rp <- ggplot(db_counts, aes(fill=value, y=n, x=variable_name_ordered)) + 
                   geom_bar(position="stack", stat="identity") +
-                  scale_fill_manual(values = my_colors, na.value = "gray80", labels = c(levels(db_counts$value), "Not applicable")) +
+                  scale_fill_manual(values = my_colors, na.value = "grey80", labels = c(levels(db_counts$value), "Not applicable")) +
                   labs(x = "", y = "Number of Reviews", fill = "") +
                   scale_x_discrete(limits = rev(levels(db_counts$variable_name_ordered)), labels = function(x) str_wrap(x, width = 15)) +
                   theme_light() +
@@ -126,13 +126,13 @@ table(ccmethods_data$db_list_gp, useNA = "always")
 prop.table(table(ccmethods_data$db_list_gp)) * 100
 
 #Percent reporting website urls
-table(ccmethods_data$gray_url, useNA = "always")
-prop.table(table(ccmethods_data$gray_url)) * 100
+table(ccmethods_data$grey_url, useNA = "always")
+prop.table(table(ccmethods_data$grey_url)) * 100
 
 #Source selection --------------------------------
 
 ##Figure 2. Grey lit sources ----
-##The proportion of reviews by coordinating group that intentionally searched sources for different types of gray literature 
+##The proportion of reviews by coordinating group that intentionally searched sources for different types of grey literature 
 ##Multiple versions of this figure were generated and the heat map was used in the final manuscript
 
 #Separate rows with more than one coordinating group
@@ -158,7 +158,7 @@ mydata_sep <- subset(mydata_sep, cg != "Nutrition")
 #Subset only needed variables
 db2_subset <- mydata_sep[, c("cg", "conf_proc", "theses", "trials_reg", "govt_ngo")]
 
-#Summarize percent by coordinating group for each type of gray lit
+#Summarize percent by coordinating group for each type of grey lit
 df_summary <- db2_subset %>%
   gather(variable, value, -cg) %>%
   group_by(cg, variable) %>%
@@ -182,7 +182,7 @@ df_summary_long$variable <- factor(df_summary_long$variable, levels = c("Govt, N
                                                                         "Theses & Dissertations", "Conference Proceedings"))
 
 #Plot heatmap
-pt_heat_gray <- ggplot(df_summary_long, aes(variable, cg, fill = value)) +
+pt_heat_grey <- ggplot(df_summary_long, aes(variable, cg, fill = value)) +
                 geom_tile() +
                 scale_fill_gradient(low = "white", high = "steelblue") +
                 labs(title = "", x = "", y = "", fill = "% 'A'") +
@@ -191,7 +191,7 @@ pt_heat_gray <- ggplot(df_summary_long, aes(variable, cg, fill = value)) +
                 scale_x_discrete(position="top") +
                 scale_y_discrete(labels = function(x) str_wrap(x, width = 25))
 
-ggsave(here("../plots/fig2.png"), plot = pt_heat_gray, width = 9.5, height = 6, units = "in", dpi = 300) 
+ggsave(here("../plots/fig2.png"), plot = pt_heat_grey, width = 9.5, height = 6, units = "in", dpi = 300) 
 
 
 #These are alternative versions of Figure 2 not used in the manuscript

@@ -10,15 +10,18 @@
 library(tidyverse)
 library(ggplot2)
 library(gt)
+library(RColorBrewer)
 library(here)
 
 #Import data
-ccmethods_data <- read.csv(here("../data/CC-methods-data-extraction-final-20230227-clean-recode.csv"), na = "NA")
+ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20230227-clean-recode.csv"), na = "NA")
 
 
 #IS involvement -------------------------------------
 
-##Figure 6: Number reporting involvement of librarians at different levels (co-authorship, involved in some way, reported (acknowledged in acknowledgements or methods) ----
+#How IS involvement is reported
+
+##Figure 6: Number reporting involvement of librarians at different levels (co-authorship, consulted, no IS) ----
 ##Count bars for number yes for each type of involvement
 ##Relevant variables: infosp_coauthor, infosp_methods, infosp_ackn, infosp_roles
 
@@ -38,67 +41,86 @@ table(ccmethods_data_is$infosp_roles)
 table(ccmethods_data_is$infosp_coauthor)
 table(ccmethods_data_is$infosp_ackn)
 
-#Combine roles and acknowledgement
+#Combine roles, acknowledgement and methods (as IS consulted but not co-author)
 ccmethods_data_is <- ccmethods_data_is %>%
-  mutate(infosp_rolesac = case_when(infosp_roles == "yes" | infosp_ackn == "yes" ~ "yes",
-                                    infosp_roles == "no" & infosp_ackn == "no" ~ "no"))
+  mutate(infosp_rolesac = case_when(infosp_roles == "yes" | infosp_ackn == "yes" | infosp_methods == "yes" ~ "yes",
+                                    infosp_roles == "no" & infosp_ackn == "no" & infosp_methods == "no" ~ "no"))
+
+ccmethods_data_is <- ccmethods_data_is %>%
+  mutate(infosp_consult = case_when(infosp_rolesac == "yes" & infosp_coauthor == "no" ~ "yes",
+                                    infosp_rolesac == "yes" & infosp_coauthor == "yes" ~ "no",
+                                    infosp_rolesac == "no" & infosp_coauthor == "no" ~ "no", 
+                                    infosp_rolesac == "no" & infosp_coauthor == "yes" ~ "no"))
+
+#Convert the infosp_involve column to infosp_none (so yes = no and vice versa)
+ccmethods_data_is <- ccmethods_data_is %>%
+  mutate(infosp_none = case_when(infosp_involve == "yes" ~ "no",
+                                 infosp_involve == "no" ~ "yes"  ))
 
 #Subset the needed variables
-db_subset_infosp <- ccmethods_data_is[, c("infosp_methods", "infosp_rolesac", "infosp_coauthor", "infosp_involve")]
+db_subset_infosp <- ccmethods_data_is[, c("infosp_consult", "infosp_coauthor", "infosp_none", "cg")]
+
 
 #Convert all to factors and set level orders
-db_subset_infosp$infosp_methods <- factor(db_subset_infosp$infosp_methods, levels=ordered(c("yes", "no")))
-db_subset_infosp$infosp_rolesac <- factor(db_subset_infosp$infosp_rolesac, levels=ordered(c("yes", "no")))
+db_subset_infosp$infosp_consult <- factor(db_subset_infosp$infosp_consult, levels=ordered(c("yes", "no")))
 db_subset_infosp$infosp_coauthor <- factor(db_subset_infosp$infosp_coauthor, levels=ordered(c("yes", "no")))
-db_subset_infosp$infosp_involve <- factor(db_subset_infosp$infosp_involve, levels=ordered(c("yes", "no")))
+db_subset_infosp$infosp_none <- factor(db_subset_infosp$infosp_none, levels=ordered(c("yes", "no")))
 
 #Transform to long format on variable name
 db_long_infosp <- db_subset_infosp %>%
-  gather(variable_name, value)
+  gather(variable_name, value, -cg)
+
+#Remove second coordinating group name from cg column for cleaner repsentation of the data
+db_long_infosp$cg <- sub(";.*", "", db_long_infosp$cg)
 
 #Group by variable name and count number of yes values
 df_counts_infosp <- db_long_infosp %>% 
   filter(value == "yes") %>% 
-  group_by(variable_name) %>% 
+  group_by(variable_name, cg) %>% 
   summarise(count = n()) 
 
 # Convert the groups to a factor with the desired order and recode
 df_counts_infosp$variable_name_ordered <- recode_factor(df_counts_infosp$variable_name, 
                                                         infosp_coauthor = "Co-authorship",
-                                                        infosp_methods = "Methods Section",
-                                                        infosp_rolesac = "Roles or Acknowledgements", 
-                                                        infosp_involve = "No IS Involvement")
+                                                        infosp_consult = "IS consulted", 
+                                                        infosp_none = "No IS Involvement")
+
 
 
 #Plot stacked grouped bar chart
-pt_is <- ggplot(df_counts_infosp, aes(y=count, x=variable_name_ordered)) + 
+my_palette <- brewer.pal(7, "Set3")
+
+pt_is <- ggplot(df_counts_infosp, aes(y=count, x=variable_name_ordered, fill=cg)) + 
           geom_bar(stat="identity") +
           labs(x = "", y = "Number of Reviews") +
           scale_x_discrete(labels = function(x) str_wrap(x, width = 15)) +
           theme_light() +
           theme(axis.text.x = element_text(size = 10)) +
-          coord_flip()
+          coord_flip() +
+          theme(legend.position = "bottom") +
+          guides(fill = guide_legend(nrow=3, byrow=TRUE,title = NULL)) +
+          scale_fill_manual(values = my_palette)
 
-ggsave(here("../plots/fig6.png"), plot = pt_is, width = 6, height = 4, units = "in", dpi = 300) 
+ggsave(here("./plots/fig6.png"), plot = pt_is, width = 7, height = 5, units = "in", dpi = 300) 
 
 
 #IS involvement, conduct and reporting----
 
 #Subset to needed variables
-ccmethods_data_is_sub <- ccmethods_data_is[, c("id", "gray_url", "free_gs", "engine_google", "handsearch",
+ccmethods_data_is_sub <- ccmethods_data_is[, c("id", "grey_url", "free_gs", "engine_google", "handsearch",
                                                "experts", "date_searches", "db_platform", "strategy_all", "boolean", "subhead", "keyword_var", "phrase", 
-                                               "syntax", "hedge", "adapt", "gray_list", "gray_search", "free_search", "engine_search", "backward", "forward", 
+                                               "syntax", "hedge", "adapt", "grey_list", "grey_search", "free_search", "engine_search", "backward", "forward", 
                                                "reviews", "forward_method", "refman_software", "deduplicate", "num_records", "infosp_methods", 
                                                "infosp_rolesac", "infosp_coauthor", "infosp_involve", "kugley", "update_search", "db_list_gp", "infospec")]
 
 
 #Recode variables to yes, no, some
 ccmethods_data_is_sub <- ccmethods_data_is_sub %>%
-  mutate(gray_url = case_when(
-    gray_url == "all" ~ "yes",
-    gray_url == "some" ~ "some",
-    gray_url == "none" ~ "no",
-    TRUE ~ as.character(gray_url)  # Keep other values unchanged
+  mutate(grey_url = case_when(
+    grey_url == "all" ~ "yes",
+    grey_url == "some" ~ "some",
+    grey_url == "none" ~ "no",
+    TRUE ~ as.character(grey_url)  # Keep other values unchanged
   ))
 
 ccmethods_data_is_sub <- ccmethods_data_is_sub %>%
@@ -118,20 +140,20 @@ ccmethods_data_is_sub <- ccmethods_data_is_sub %>%
   ))
 
 ccmethods_data_is_sub <- ccmethods_data_is_sub %>%
-  mutate(gray_list = case_when(
-    gray_list == "all" ~ "yes",
-    gray_list == "some" ~ "some",
-    gray_list == "none" ~ "no",
-    TRUE ~ as.character(gray_list)  # Keep other values unchanged
+  mutate(grey_list = case_when(
+    grey_list == "all" ~ "yes",
+    grey_list == "some" ~ "some",
+    grey_list == "none" ~ "no",
+    TRUE ~ as.character(grey_list)  # Keep other values unchanged
   ))
 
 ccmethods_data_is_sub <- ccmethods_data_is_sub %>%
-  mutate(gray_search = case_when(
-    gray_search == "General gray literature approach stated in text only" ~ "some",
-    gray_search == "All exact search strategies reported" ~ "yes",
-    gray_search == "No reporting of how gray literature was searched" ~ "no",
-    gray_search == "Some exact search strategies reported" ~ "yes",
-    TRUE ~ as.character(gray_search)  # Keep other values unchanged
+  mutate(grey_search = case_when(
+    grey_search == "General grey literature approach stated in text only" ~ "some",
+    grey_search == "All exact search strategies reported" ~ "yes",
+    grey_search == "No reporting of how grey literature was searched" ~ "no",
+    grey_search == "Some exact search strategies reported" ~ "yes",
+    TRUE ~ as.character(grey_search)  # Keep other values unchanged
   ))
 
 ccmethods_data_is_sub <- ccmethods_data_is_sub %>%
@@ -444,9 +466,9 @@ report_coauth <- coauthor_impact %>% filter(variable == "strategy_all"|
                                               variable == "db_list_gp"|
                                               variable == "db_platform"|
                                               variable == "date_searches"|
-                                              variable == "gray_list"|
-                                              variable == "gray_search"|
-                                              variable == "gray_url"|
+                                              variable == "grey_list"|
+                                              variable == "grey_search"|
+                                              variable == "grey_url"|
                                               variable == "forward_method"|
                                               variable == "refman_software"|
                                               variable == "deduplicate"|
@@ -457,9 +479,9 @@ report_mention <- mention_impact %>% filter(variable == "strategy_all"|
                                               variable == "db_list_gp"|
                                               variable == "db_platform"|
                                               variable == "date_searches"|
-                                              variable == "gray_list"|
-                                              variable == "gray_search"|
-                                              variable == "gray_url"|
+                                              variable == "grey_list"|
+                                              variable == "grey_search"|
+                                              variable == "grey_url"|
                                               variable == "forward_method"|
                                               variable == "refman_software"|
                                               variable == "deduplicate"|
@@ -470,9 +492,9 @@ report_nois <- none_impact %>% filter(variable == "strategy_all"|
                                         variable == "db_list_gp"|
                                         variable == "db_platform"|
                                         variable == "date_searches"|
-                                        variable == "gray_list"|
-                                        variable == "gray_search"|
-                                        variable == "gray_url"|
+                                        variable == "grey_list"|
+                                        variable == "grey_search"|
+                                        variable == "grey_url"|
                                         variable == "forward_method"|
                                         variable == "refman_software"|
                                         variable == "deduplicate"|
@@ -490,9 +512,9 @@ report_is_table_rename <- report_is_table %>%
     variable == "db_platform" ~ "Database platform reported",
     variable == "deduplicate" ~ "Deduplication method reported",
     variable == "forward_method" ~ "Method for forward citation searching described",
-    variable == "gray_list" ~ "Gray lit sources listed",
-    variable == "gray_search" ~ "Gray lit search reported",
-    variable == "gray_url" ~ "Gray lit URLs reported",
+    variable == "grey_list" ~ "grey lit sources listed",
+    variable == "grey_search" ~ "grey lit search reported",
+    variable == "grey_url" ~ "grey lit URLs reported",
     variable == "refman_software" ~ "Reference management software reported",
     variable == "strategy_all" ~ "All search strategies reported",
     variable == "num_records" ~ "Number of records per database reported"
@@ -500,8 +522,8 @@ report_is_table_rename <- report_is_table %>%
 
 #Reorder with custom order 
 report_custom_order <- c("All search strategies reported","All databases and sub-databases listed","Database platform reported",
-                         "Search dates reported", "Gray lit sources listed", "Gray lit search reported",
-                         "Gray lit URLs reported", "Method for forward citation searching described",
+                         "Search dates reported", "grey lit sources listed", "grey lit search reported",
+                         "grey lit URLs reported", "Method for forward citation searching described",
                          "Reference management software reported", "Deduplication method reported",
                          "Number of records per database reported")
 
@@ -572,16 +594,16 @@ report_is_chart_renamed <- report_is_chart_long %>%
     variable == "db_platform" ~ "Database platform",
     variable == "deduplicate" ~ "Dedup method",
     variable == "forward_method" ~ "Forward citation method",
-    variable == "gray_list" ~ "Gray lit sources",
-    variable == "gray_search" ~ "Gray lit search",
-    variable == "gray_url" ~ "Gray lit URLs",
+    variable == "grey_list" ~ "grey lit sources",
+    variable == "grey_search" ~ "grey lit search",
+    variable == "grey_url" ~ "grey lit URLs",
     variable == "refman_software" ~ "Ref mgmt software",
     variable == "strategy_all" ~ "All search strategies",
     variable == "num_records" ~ "Number of database results"
   ))
 
 #Reorder so that the legend list matches the order of values in the No IS column
-custom_order_isrp <- c("Gray lit sources", "Search dates", "Forward citation method", "Database names", "Database platform", "Ref mgmt software", "All search strategies", "Gray lit search", "Number of database results", "Gray lit URLs", "Dedup method")
+custom_order_isrp <- c("grey lit sources", "Search dates", "Forward citation method", "Database names", "Database platform", "Ref mgmt software", "All search strategies", "grey lit search", "Number of database results", "grey lit URLs", "Dedup method")
 report_is_chart_renamed$variable <- factor(report_is_chart_renamed$variable, levels = custom_order_isrp)
 
 #Create distinguishable palette for 11 variables
