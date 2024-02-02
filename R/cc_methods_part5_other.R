@@ -105,42 +105,70 @@ ref_tools %>%
   group_by(tool) %>%
   summarize(count = n())
 
-#Supplement: Adherence to AMSTAR --------------------------------------------
+#Supplementary Table 2: Adherence to AMSTAR --------------------------------------------
 
 #At least 2 databases searched
-prop.table(table(ccmethods_data$two_db)) * 100
-table(ccmethods_data$two_db)
+twodb_num_yes <- ccmethods_data %>%
+  summarize(twodb_num_yes = sum(two_db == 'yes', na.rm = TRUE)) %>%
+  pull(twodb_num_yes)
+
+twodb_perc_yes <- ccmethods_data %>%
+  summarize(twodb_perc_yes = mean(two_db == 'yes', na.rm = TRUE) * 100) %>%
+  pull(twodb_perc_yes) |> round(digits=1)
 
 #Provided search strategy
-prop.table(table(ccmethods_data$strategy_one)) * 100
-table(ccmethods_data$strategy_one)
+stratone_num_yes <- ccmethods_data %>%
+  summarize(stratone_num_yes = sum(strategy_one == 'yes', na.rm = TRUE)) %>%
+  pull(stratone_num_yes)
+
+stratone_perc_yes <- ccmethods_data %>%
+  summarize(stratone_perc_yes = mean(strategy_one == 'yes', na.rm = TRUE) * 100) %>%
+  pull(stratone_perc_yes) |> round(digits=1)
 
 #Justified restrictions
 #Create new justification column where NA is yes (for use below)
 ccmethods_data$limit_just_amstar <- ifelse(is.na(ccmethods_data$limit_just), "yes", ccmethods_data$limit_just)
 
-prop.table(table(ccmethods_data$limit_just_amstar)) * 100 
-table(ccmethods_data$limit_just, useNA = "always") #note this should remove missing values for those not using limits
+limjust_num_yes <- ccmethods_data %>%
+  summarize(limjust_num_yes = sum(limit_just_amstar == 'yes', na.rm = TRUE)) %>%
+  pull(limjust_num_yes)
+
+limjust_perc_yes <- ccmethods_data %>%
+  summarize(limjust_perc_yes = mean(limit_just_amstar == 'yes', na.rm = TRUE) * 100) %>%
+  pull(limjust_perc_yes) |> round(digits=1)
 
 #Conducted backward citation searching
-prop.table(table(ccmethods_data$backward)) * 100
-table(ccmethods_data$backward)
+
+bw_num_yes <- ccmethods_data %>%
+  summarize(bw_num_yes = sum(backward == 'yes', na.rm = TRUE)) %>%
+  pull(bw_num_yes)
+
+bw_perc_yes <- ccmethods_data %>%
+  summarize(bw_perc_yes = mean(backward == 'yes', na.rm = TRUE) * 100) %>%
+  pull(bw_perc_yes) |> round(digits=1)
 
 #Searched trial and study registries
 trreg_yes <- sum(ccmethods_data$trials == "yes" | ccmethods_data$registries == "yes")
-trreg_percent <- trreg_yes/nrow(ccmethods_data)*100
+trreg_percent <- trreg_yes/nrow(ccmethods_data)*100 |> round(digits=2)
+
 
 #Create new column combining trials and registries (for use below)
 ccmethods_data$trial_reg <- ifelse(ccmethods_data$trials == "yes" | ccmethods_data$registries == "yes", "yes", 
                        ifelse(ccmethods_data$trials != "yes" & ccmethods_data$registries != "yes", "no", "unclear"))
 
 #Consulted experts
-prop.table(table(ccmethods_data$experts)) * 100
-table(ccmethods_data$experts)
+exp_num_yes <- ccmethods_data %>%
+  summarize(exp_num_yes = sum(experts == 'yes', na.rm = TRUE)) %>%
+  pull(exp_num_yes)
+
+exp_perc_yes <- ccmethods_data %>%
+  summarize(exp_perc_yes = mean(experts == 'yes', na.rm = TRUE) * 100) %>%
+  pull(exp_perc_yes) |> round(digits=1)
 
 #Searched gray literature
 grey_yes <- sum(ccmethods_data$conf_proc == "yes" | ccmethods_data$theses == "yes" | ccmethods_data$govt == "yes" | ccmethods_data$ngo == "yes")
-grey_percent <- grey_yes/nrow(ccmethods_data)*100
+grey_percent <- grey_yes/nrow(ccmethods_data)*100 |> round(digits=1)
+
 
 #Create new column combining all gray lit columns (for use below)
 ccmethods_data$all_grey <- ifelse(ccmethods_data$conf_proc == "yes" | ccmethods_data$theses == "yes" | ccmethods_data$govt == "yes" | ccmethods_data$ngo == "yes", "yes", 
@@ -160,29 +188,36 @@ ccmethods_data$search_lag <- round(ccmethods_data$search_lag)
 
 #number of reviews where search lag is less than or equal to 24 months
 lag_24 <- sum(ccmethods_data$search_lag <= 24)
-lag_24_percent <- lag_24/nrow(ccmethods_data)*100
+lag_24_percent <- lag_24/nrow(ccmethods_data)*100 |> round(digits=1)
 
 #Partial Yes adherence: at least 2 databases, provided at least one search strategy, justified restrictions
 ccmethods_data$amstar_partial_yes <- ifelse(ccmethods_data$two_db == "yes" & ccmethods_data$strategy_one == "yes" & ccmethods_data$limit_just_amstar == "yes", "yes", "no") 
-table(ccmethods_data$amstar_partial_yes)
-
+partial_yes <- sum(ccmethods_data$amstar_partial_yes == "yes")
+partial_yes_perc <- ((partial_yes/nrow(ccmethods_data)) * 100) |> round(digits=1)
 
 #Full Yes adherence: all partial plus backward citation searching, searched trials/registries, consulted experts, searched grey literature, conducted search within 24 months
-ccmethods_data$amstar_full_yes <- ifelse(ccmethods_data$amstar_partial_yes == "yes" & ccmethods_data$backward == "yes" & ccmethods_data$trial_reg == "yes" & ccmethods_data$experts == "yes" & ccmethods_data$all_grey == "yes" & ccmethods_data$search_lag <= 24, "yes", "no") 
-table(ccmethods_data$amstar_full_yes)
+ccmethods_data$amstar_full_yes <- ifelse(ccmethods_data$amstar_partial_yes == "yes" & ccmethods_data$backward == "yes" & ccmethods_data$experts == "yes" & ccmethods_data$all_grey == "yes" & ccmethods_data$search_lag <= 24, "yes", "no") 
+full_yes <- sum(ccmethods_data$amstar_full_yes == "yes")
+full_yes_perc <- ((full_yes/nrow(ccmethods_data)) * 100) |> round(digits=1)
+
+#Calculate number and percent of No ratings (total number of reviews minus number of Partial Yes ratings)
+no_amst_num <- nrow(ccmethods_data) - partial_yes
+no_amst_perc <- ((no_amst_num/nrow(ccmethods_data)) * 100) |> round(digits=1)
+
 
 #AMSTAR table
-#Manually create .csv file containing data from above calculations
+#Create dataframe from values above
+number <- c(twodb_num_yes, stratone_num_yes, limjust_num_yes, bw_num_yes, trreg_yes, exp_num_yes, grey_yes, lag_24, full_yes, partial_yes, no_amst_num)
+percent <- c(twodb_perc_yes, stratone_perc_yes, limjust_perc_yes, bw_perc_yes, trreg_percent, exp_perc_yes, grey_percent, lag_24_percent, full_yes_perc, partial_yes_perc, no_amst_perc)
+criteria <- c("Searched at least 2 databases", "Provided search strategy", "Justified publication restrictions", "Searched the reference lists of included studies", "Searched trial/study registries", "Included/consulted content experts", "Searched for grey literature", "Conducted search within 24 months", "Yes", "Partial Yes", "No")
+is_table_amstar <- data.frame(criteria = criteria, number = number, percent = percent)
+is_table_amstar$percent <- round(is_table_amstar$percent, 1)
 
-is_table_amstar <- read.csv(here("./data_outputs/ccmethods_amstar_table.csv"))
+#Prepare dataframe as table for gt
 is_table <- is_table_amstar %>% gt() 
 
 gt_tbl_amstar <- 
   gt(is_table_amstar) |>
-  tab_header(
-    title = "",
-    subtitle = ""
-  ) |>
   tab_spanner(
     label = "Meets AMSTAR 2 criteria",
     columns = c(number, percent)
@@ -229,6 +264,6 @@ gt_tbl_amstar <-
 
 gt_tbl_amstar
 
-#Save to image file
+#Save to image file (note: may need to restart RStudio to get this to work)
 gt_tbl_amstar |> gtsave(here("./plots/amstar_table.png"), expand = 10)
 
