@@ -190,15 +190,17 @@ ccmethods_data$search_lag <- round(ccmethods_data$search_lag)
 lag_24 <- sum(ccmethods_data$search_lag <= 24)
 lag_24_percent <- lag_24/nrow(ccmethods_data)*100 |> round(digits=1)
 
-#Partial Yes adherence: at least 2 databases, provided at least one search strategy, justified restrictions
-ccmethods_data$amstar_partial_yes <- ifelse(ccmethods_data$two_db == "yes" & ccmethods_data$strategy_one == "yes" & ccmethods_data$limit_just_amstar == "yes", "yes", "no") 
-partial_yes <- sum(ccmethods_data$amstar_partial_yes == "yes")
-partial_yes_perc <- ((partial_yes/nrow(ccmethods_data)) * 100) |> round(digits=1)
-
 #Full Yes adherence: all partial plus backward citation searching, searched trials/registries, consulted experts, searched grey literature, conducted search within 24 months
 ccmethods_data$amstar_full_yes <- ifelse(ccmethods_data$amstar_partial_yes == "yes" & ccmethods_data$backward == "yes" & ccmethods_data$experts == "yes" & ccmethods_data$all_grey == "yes" & ccmethods_data$search_lag <= 24, "yes", "no") 
 full_yes <- sum(ccmethods_data$amstar_full_yes == "yes")
 full_yes_perc <- ((full_yes/nrow(ccmethods_data)) * 100) |> round(digits=1)
+
+
+#Partial Yes adherence: at least 2 databases, provided at least one search strategy, justified restrictions
+ccmethods_data$amstar_partial_yes <- ifelse(ccmethods_data$two_db == "yes" & ccmethods_data$strategy_one == "yes" & ccmethods_data$limit_just_amstar == "yes", "yes", "no") 
+partial_yes <- sum(ccmethods_data$amstar_partial_yes == "yes")
+partial_yes_only <- partial_yes - full_yes
+partial_yes_perc <- ((partial_yes_only/nrow(ccmethods_data)) * 100) |> round(digits=1)
 
 #Calculate number and percent of No ratings (total number of reviews minus number of Partial Yes ratings)
 no_amst_num <- nrow(ccmethods_data) - partial_yes
@@ -207,7 +209,7 @@ no_amst_perc <- ((no_amst_num/nrow(ccmethods_data)) * 100) |> round(digits=1)
 
 #AMSTAR table
 #Create dataframe from values above
-number <- c(twodb_num_yes, stratone_num_yes, limjust_num_yes, bw_num_yes, trreg_yes, exp_num_yes, grey_yes, lag_24, full_yes, partial_yes, no_amst_num)
+number <- c(twodb_num_yes, stratone_num_yes, limjust_num_yes, bw_num_yes, trreg_yes, exp_num_yes, grey_yes, lag_24, full_yes, partial_yes_only, no_amst_num)
 percent <- c(twodb_perc_yes, stratone_perc_yes, limjust_perc_yes, bw_perc_yes, trreg_percent, exp_perc_yes, grey_percent, lag_24_percent, full_yes_perc, partial_yes_perc, no_amst_perc)
 criteria <- c("Searched at least 2 databases", "Provided search strategy", "Justified publication restrictions", "Searched the reference lists of included studies", "Searched trial/study registries", "Included/consulted content experts", "Searched for grey literature", "Conducted search within 24 months", "Yes", "Partial Yes", "No")
 is_table_amstar <- data.frame(criteria = criteria, number = number, percent = percent)
