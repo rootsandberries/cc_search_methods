@@ -11,7 +11,7 @@ library(ggplot2)
 library(here)
 
 #Import data
-ccmethods_data <- read.csv(here("../data/CC-methods-data-extraction-final-20230227-clean-recode.csv"), na = "NA")
+ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20230227-clean-recode.csv"), na = "NA")
 
 
 #Search quality -----------------------------------
@@ -56,8 +56,8 @@ table(ccmethods_data$peer_review, useNA = "always")
 #Search reporting -------------------------------------------
 
 ##Figure 3. Database searching ----
-##Bar chart: Number reporting at least one database search, all database searches, dates of searches, details of gray literature searches, details of free search engine searches 
-##Relevant variables: strategy_rep (new), date_searches, gray_search, 
+##Bar chart: Number reporting at least one database search, all database searches, dates of searches, details of grey literature searches, details of free search engine searches 
+##Relevant variables: strategy_rep (new), date_searches, grey_search, 
 
 #Create a new variable for how many database searches were reported based on strategy_one and strategy_all
 ccmethods_data <- ccmethods_data %>% 
@@ -67,7 +67,7 @@ ccmethods_data <- ccmethods_data %>%
                                   strategy_all == "yes" ~ "Full"))
 
 #Create subset of only needed variables
-search_subset <- ccmethods_data[, c("strategy_rep", "date_searches", "gray_search")]
+search_subset <- ccmethods_data[, c("strategy_rep", "date_searches", "grey_search")]
 
 #Convert all to factors, recode and set level orders
 search_subset$strategy_rep <- factor(search_subset$strategy_rep, levels=ordered(c("Full", "Partial", "None")))
@@ -79,14 +79,14 @@ search_subset$date_searches <- recode_factor(search_subset$date_searches,
 
 search_subset$date_searches <- factor(search_subset$date_searches, levels=ordered(c("Full", "Partial", "None")))
 
-search_subset$gray_search <- recode_factor(search_subset$gray_search, 
-                                           "General gray literature approach stated in text only" = "Partial",
+search_subset$grey_search <- recode_factor(search_subset$grey_search, 
+                                           "General grey literature approach stated in text only" = "Partial",
                                            "Some exact search strategies reported" = "Partial",
                                            "Other" = "Partial",
-                                           "No reporting of how gray literature was searched" = "None",
+                                           "No reporting of how grey literature was searched" = "None",
                                            "All exact search strategies reported" = "Full")
 
-search_subset$gray_search <- factor(search_subset$gray_search, levels=ordered(c("Full", "Partial", "None")))
+search_subset$grey_search <- factor(search_subset$grey_search, levels=ordered(c("Full", "Partial", "None")))
 
 #Transform to long format on variable name
 search_long <- search_subset %>%
@@ -98,14 +98,14 @@ search_counts <- search_long %>%
   count()
 
 # Define the desired order of the groups
-var_order <- c("strategy_rep", "date_searches", "gray_search")
+var_order <- c("strategy_rep", "date_searches", "grey_search")
 
 # Convert the groups to a factor with the desired order and recode
 search_counts$variable_name_ordered <- factor(search_counts$variable_name, levels = var_order)
 search_counts$variable_name_ordered <- recode_factor(search_counts$variable_name_ordered, 
                                                      strategy_rep = "All database search strategies", 
                                                      date_searches = "Exact dates of all searches",
-                                                     gray_search = "All gray literature search strategies")
+                                                     grey_search = "All grey literature search strategies")
 
 #Define order of values
 search_counts$value <- factor(search_counts$value, levels = ordered(c("Full", "Partial", "None")))
@@ -124,7 +124,7 @@ pt_db_search <- ggplot(search_counts, aes(fill=value, y=n, x=variable_name_order
                 #theme(text = element_text(size=15)) +
                 coord_flip()
 
-ggsave(here("../plots/fig3.png"), plot = pt_supp, width = 6, height = 4, units = "in", dpi = 300) 
+ggsave(here("./plots/fig3.png"), plot = pt_db_search, width = 6, height = 4, units = "in", dpi = 300) 
 
 
 ##In text results ----
@@ -138,8 +138,8 @@ prop.table(table(ccmethods_data$strategy_all)) * 100
 table(ccmethods_data$date_searches, useNA = "always")
 prop.table(table(ccmethods_data$date_searches)) * 100
 
-table(ccmethods_data$gray_search, useNA = "always")
-prop.table(table(ccmethods_data$gray_search)) * 100
+table(ccmethods_data$grey_search, useNA = "always")
+prop.table(table(ccmethods_data$grey_search)) * 100
 
 #Percent reporting how free search engines were used
 prop.table(table(ccmethods_data$free_search)) * 100
@@ -152,7 +152,7 @@ table(ccmethods_data$free_search, useNA = "always")
 #Variables to consider: handsearching, experts, Google, Google Scholar,
 #list of databases, complete search strategies, boolean, subhead,
 #keyword variation, phrases, syntax, limit justification, 
-#list of gray, gray search, backward, review references,
+#list of grey, grey search, backward, review references,
 #forward, reference software, deduplication, search update,
 #different types of sources
 
@@ -206,7 +206,7 @@ pt_time_conduct <- ggplot(time_cd_df_1520, aes(x = search_year, y = percent)) +
                     geom_line() +
                     facet_wrap(~ variable, ncol = 3, scales="fixed") +
                     labs(x = "Year", y = "Percent") +
-                    geom_area(fill = "gray87") +
+                    geom_area(fill = "grey87") +
                     theme_minimal() +
                     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
                     panel.grid.minor = element_blank())  
@@ -225,11 +225,11 @@ levels(ccmethods_data$db_list_gp) #Print new levels
 
 #Subset of reporting variables with publication year for temporal analysis 
 subset_report <- ccmethods_data %>%
-  select(pub_year, gray_url, date_searches, db_platform, strategy_all, gray_list, 
-         gray_search, forward_method, refman_software, deduplicate, num_records, 
+  select(pub_year, grey_url, date_searches, db_platform, strategy_all, grey_list, 
+         grey_search, forward_method, refman_software, deduplicate, num_records, 
          db_list, update_search)
 
-subset_report$gray_url <- recode_factor(subset_report$gray_url, 
+subset_report$grey_url <- recode_factor(subset_report$grey_url, 
                                         "all" = "yes", 
                                         "none" = "no",
                                         "some" = "partial")
@@ -244,7 +244,7 @@ subset_report$db_list <- recode_factor(subset_report$db_list,
                                           "Partially with some generic platforms given with no detail" = "partial", 
                                           "Yes: All databases including sub-databases of umbrella databases" = "yes")
 
-subset_report$gray_list <- recode_factor(subset_report$gray_list, 
+subset_report$grey_list <- recode_factor(subset_report$grey_list, 
                                          "all" = "yes", 
                                          "none" = "no",
                                          "some" = "partial")
@@ -254,11 +254,11 @@ subset_report$date_searches <- recode_factor(subset_report$date_searches,
                                              "No dates given" = "no",
                                              "Specific dates of each search given" = "yes")
 
-subset_report$gray_search <- recode_factor(subset_report$gray_search, 
-                                           "General gray literature approach stated in text only" = "partial",
+subset_report$grey_search <- recode_factor(subset_report$grey_search, 
+                                           "General grey literature approach stated in text only" = "partial",
                                            "Some exact search strategies reported" = "partial",
                                            "Other" = "partial",
-                                           "No reporting of how gray literature was searched" = "no",
+                                           "No reporting of how grey literature was searched" = "no",
                                            "All exact search strategies reported" = "yes")
 
 
@@ -285,9 +285,9 @@ time_rp_df_1520 <- time_rp_df_1520 %>%
                                "Database platform" = "db_platform",
                                "Deduplication method" = "deduplicate",
                                "Forward citation method" = "forward_method",
-                               "Gray lit sources" = "gray_list",
-                               "Gray lit searches" = "gray_search",
-                               "Website URLs" = "gray_url",
+                               "grey lit sources" = "grey_list",
+                               "grey lit searches" = "grey_search",
+                               "Website URLs" = "grey_url",
                                "Number of results" = "num_records",
                                "Ref Management Software"= "refman_software",
                                "All search strategies" = "strategy_all",
@@ -295,8 +295,8 @@ time_rp_df_1520 <- time_rp_df_1520 %>%
 
 time_rp_df_1520 <- time_rp_df_1520 %>% 
   mutate(variable = factor(variable,
-                           levels = c("All databases", "Database platform", "Gray lit sources",
-                                      "Website URLs", "All search strategies", "Gray lit searches",
+                           levels = c("All databases", "Database platform", "grey lit sources",
+                                      "Website URLs", "All search strategies", "grey lit searches",
                                       "Search date", "Number of results", "Search updated", 
                                       "Forward citation method", "Deduplication method", "Ref Management Software")))
 
@@ -305,7 +305,7 @@ pt_time_report <- ggplot(time_rp_df_1520, aes(x = pub_year, y = percent)) +
                     geom_line() +
                     facet_wrap(~ variable, ncol = 3, scales="fixed") +
                     labs(x = "Year", y = "Percent") +
-                    geom_area(fill = "gray87") +
+                    geom_area(fill = "grey87") +
                     theme_minimal() +
                     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
                     panel.grid.minor = element_blank()) +
