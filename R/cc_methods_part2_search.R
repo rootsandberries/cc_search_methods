@@ -11,7 +11,7 @@ library(ggplot2)
 library(here)
 
 #Import data
-ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20230227-clean-recode.csv"), na = "NA")
+ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240222-clean-recode.csv"), na = "NA")
 
 
 #Search quality -----------------------------------
@@ -57,7 +57,7 @@ table(ccmethods_data$peer_review, useNA = "always")
 
 ##Figure 3. Database searching ----
 ##Bar chart: Number reporting at least one database search, all database searches, dates of searches, details of grey literature searches, details of free search engine searches 
-##Relevant variables: strategy_rep (new), date_searches, grey_search, 
+##Relevant variables: strategy_rep (new), date_searches, grey_search 
 
 #Create a new variable for how many database searches were reported based on strategy_one and strategy_all
 ccmethods_data <- ccmethods_data %>% 
@@ -141,7 +141,7 @@ prop.table(table(ccmethods_data$date_searches)) * 100
 table(ccmethods_data$grey_search, useNA = "always")
 prop.table(table(ccmethods_data$grey_search)) * 100
 
-#Percent reporting how free search engines were used
+#Percent reporting how free scholarly search engines were used (i.e. Google Scholar)
 prop.table(table(ccmethods_data$free_search)) * 100
 table(ccmethods_data$free_search, useNA = "always")
 
@@ -211,7 +211,7 @@ pt_time_conduct <- ggplot(time_cd_df_1520, aes(x = search_year, y = percent)) +
                     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
                     panel.grid.minor = element_blank())  
 
-ggsave(here("../plots/fig4a.png"), plot = pt_time_report, width = 7, height = 6, units = "in", dpi = 300) 
+ggsave(here("./plots/fig4a.png"), plot = pt_time_conduct, width = 7, height = 6, units = "in", dpi = 300) 
 
 
 ##Figure 4b. Reporting variables over time ----
@@ -285,8 +285,8 @@ time_rp_df_1520 <- time_rp_df_1520 %>%
                                "Database platform" = "db_platform",
                                "Deduplication method" = "deduplicate",
                                "Forward citation method" = "forward_method",
-                               "grey lit sources" = "grey_list",
-                               "grey lit searches" = "grey_search",
+                               "Grey lit sources" = "grey_list",
+                               "Grey lit searches" = "grey_search",
                                "Website URLs" = "grey_url",
                                "Number of results" = "num_records",
                                "Ref Management Software"= "refman_software",
@@ -295,8 +295,8 @@ time_rp_df_1520 <- time_rp_df_1520 %>%
 
 time_rp_df_1520 <- time_rp_df_1520 %>% 
   mutate(variable = factor(variable,
-                           levels = c("All databases", "Database platform", "grey lit sources",
-                                      "Website URLs", "All search strategies", "grey lit searches",
+                           levels = c("All databases", "Database platform", "Grey lit sources",
+                                      "Website URLs", "All search strategies", "Grey lit searches",
                                       "Search date", "Number of results", "Search updated", 
                                       "Forward citation method", "Deduplication method", "Ref Management Software")))
 
@@ -311,4 +311,4 @@ pt_time_report <- ggplot(time_rp_df_1520, aes(x = pub_year, y = percent)) +
                     panel.grid.minor = element_blank()) +
                     scale_y_continuous(limits = c(0, 100))
 
-ggsave(here("../plots/fig4b.png"), plot = pt_time_report, width = 7, height = 6, units = "in", dpi = 300) 
+ggsave(here("./plots/fig4b.png"), plot = pt_time_report, width = 7, height = 6, units = "in", dpi = 300) 

@@ -14,16 +14,12 @@ library(RColorBrewer)
 library(here)
 
 #Import data
-ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20230227-clean-recode.csv"), na = "NA")
+ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240222-clean-recode.csv"), na = "NA")
 
 
 #IS involvement -------------------------------------
 
 #How IS involvement is reported
-
-##Figure 6: Number reporting involvement of librarians at different levels (co-authorship, consulted, no IS) ----
-##Count bars for number yes for each type of involvement
-##Relevant variables: infosp_coauthor, infosp_methods, infosp_ackn, infosp_roles
 
 #First recode db_list to none (no db given), some (partial--lacking sub-databases), all (all including sub-db)
 ccmethods_data$db_list_gp <- factor(ccmethods_data$db_list) #Convert to factor
@@ -35,11 +31,26 @@ levels(ccmethods_data$db_list_gp) #Print new levels
 
 ccmethods_data_is <- ccmethods_data %>% mutate(infospec=if_else(infosp_coauthor == "yes" | infosp_involve == "yes", "yes", "no"))
 
+## In-text information ----
+
 table(ccmethods_data_is$infosp_involve)
+prop.table(table(ccmethods_data_is$infosp_involve)) * 100
+
 table(ccmethods_data_is$infosp_methods)
+prop.table(table(ccmethods_data_is$infosp_methods)) * 100
+
 table(ccmethods_data_is$infosp_roles)
+prop.table(table(ccmethods_data_is$infosp_roles)) * 100
+
 table(ccmethods_data_is$infosp_coauthor)
+prop.table(table(ccmethods_data_is$infosp_coauthor)) * 100
+
 table(ccmethods_data_is$infosp_ackn)
+prop.table(table(ccmethods_data_is$infosp_ackn)) * 100
+
+##Figure 6: Number reporting involvement of librarians at different levels (co-authorship, consulted, no IS) ----
+##Count bars for number yes for each type of involvement
+##Relevant variables: infosp_coauthor, infosp_methods, infosp_ackn, infosp_roles
 
 #Combine roles, acknowledgement and methods (as IS consulted but not co-author)
 ccmethods_data_is <- ccmethods_data_is %>%
@@ -51,6 +62,9 @@ ccmethods_data_is <- ccmethods_data_is %>%
                                     infosp_rolesac == "yes" & infosp_coauthor == "yes" ~ "no",
                                     infosp_rolesac == "no" & infosp_coauthor == "no" ~ "no", 
                                     infosp_rolesac == "no" & infosp_coauthor == "yes" ~ "no"))
+
+table(ccmethods_data_is$infosp_consult)
+prop.table(table(ccmethods_data_is$infosp_consult)) * 100
 
 #Convert the infosp_involve column to infosp_none (so yes = no and vice versa)
 ccmethods_data_is <- ccmethods_data_is %>%
@@ -104,7 +118,7 @@ pt_is <- ggplot(df_counts_infosp, aes(y=count, x=variable_name_ordered, fill=cg)
 ggsave(here("./plots/fig6.png"), plot = pt_is, width = 7, height = 5, units = "in", dpi = 300) 
 
 
-#IS involvement, conduct and reporting----
+#IS involvement, conduct and reporting ----
 
 #Subset to needed variables
 ccmethods_data_is_sub <- ccmethods_data_is[, c("id", "grey_url", "free_gs", "engine_google", "handsearch",
@@ -339,13 +353,13 @@ conduct_is_table_rename <- conduct_is_table %>%
     variable == "kugley" ~ "Kugley et al. (2017) guidance cited",
     variable == "phrase" ~ "Phrase searching used correctly",
     variable == "reviews" ~ "References of related reviews searched", 
-    variable == "subhead" ~ "Database sub-heading/thesauri used", 
+    variable == "subhead" ~ "Database subj heading/thesauri used", 
     variable == "syntax" ~ "Database syntax used correctly", 
     variable == "update_search" ~ "Search updated prior to publication"
   ))
 
 #Reorder with custom order 
-conduct_custom_order <- c("Boolean operators used correctly","Database sub-heading/thesauri used","Keyword variants used",
+conduct_custom_order <- c("Boolean operators used correctly","Database subj heading/thesauri used","Keyword variants used",
                           "Phrase searching used correctly", "Database syntax used correctly", "Google Scholar searched",
                           "Google searched", "Handsearches conducted","Experts contacted",
                           "Backward citation searching conducted", "Forward citation searching conducted",
@@ -355,10 +369,10 @@ conduct_is_table_rename <- conduct_is_table_rename %>%
   mutate(variable = factor(variable, levels = conduct_custom_order)) %>%
   arrange(variable)
 
-write_csv(conduct_is_table_rename, here("../data_outputs/ccmethods_isinvolve_conduct_table.csv"))
+write_csv(conduct_is_table_rename, here("./data_outputs/ccmethods_isinvolve_conduct_table.csv"))
 
 #Conduct Table
-is_table_df <- read.csv(here("../data_outputs/ccmethods_isinvolve_conduct_table.csv"))
+is_table_df <- read.csv(here("./data_outputs/ccmethods_isinvolve_conduct_table.csv"))
 is_table <- is_table_df %>% gt() 
 
 gt_tbl_conduct <- 
@@ -387,7 +401,7 @@ gt_tbl_conduct <-
 gt_tbl_conduct
 
 #Save to image file
-gt_tbl_conduct |> gtsave(here("../plots/conduct_is_table.png"), expand = 10)
+gt_tbl_conduct |> gtsave(here("./plots/conduct_is_table.png"), expand = 10)
 
 ##Figure 7A. Line graph for IS impact on conduct variables----
 #Subset only percentage columns from conduct_is_table
@@ -423,13 +437,13 @@ conduct_is_chart_renamed <- conduct_is_chart_long %>%
     variable == "kugley" ~ "Kugley et al. (2017) guidance cited",
     variable == "phrase" ~ "Phrase searching correct",
     variable == "reviews" ~ "Related reviews searched", 
-    variable == "subhead" ~ "Database sub-headings used", 
+    variable == "subhead" ~ "Database subj headings used", 
     variable == "syntax" ~ "Database syntax correct", 
     variable == "update_search" ~ "Search updated"
   ))
 
 #Reorder so that the legend list matches the order of values in the No IS column
-custom_order_iscd <- c("Backward citation search", "Boolean operators correct", "Keyword variants used", "Phrase searching correct", "Experts contacted", "Related reviews searched", "Database syntax correct", "Google Scholar searched", "Database sub-headings used", "Handsearches conducted", "Forward citation search", "Google searched", "Search updated", "Kugley et al. (2017) guidance cited")
+custom_order_iscd <- c("Backward citation search", "Boolean operators correct", "Keyword variants used", "Phrase searching correct", "Experts contacted", "Related reviews searched", "Database syntax correct", "Google Scholar searched", "Database subj headings used", "Handsearches conducted", "Forward citation search", "Google searched", "Search updated", "Kugley et al. (2017) guidance cited")
 conduct_is_chart_renamed$variable <- factor(conduct_is_chart_renamed$variable, levels = custom_order_iscd)
 
 
@@ -456,7 +470,7 @@ pt_conduct_is <- ggplot(conduct_is_chart_renamed, aes(x = group, y = percentage,
                   theme(legend.title=element_blank()) +
                   scale_color_manual(values = my_palette_14)
 
-ggsave(here("../plots/fig7a.png"), plot = pt_conduct_is, width = 6, height = 4, units = "in", dpi = 300) 
+ggsave(here("./plots/fig7a.png"), plot = pt_conduct_is, width = 6, height = 4, units = "in", dpi = 300) 
 
 
 ##Table of reporting variables by IS involvement----
@@ -531,10 +545,10 @@ report_is_table_rename <- report_is_table_rename %>%
   mutate(variable = factor(variable, levels = report_custom_order)) %>%
   arrange(variable)
 
-write_csv(report_is_table_rename, here("../data_outputs/ccmethods_isinvolve_report_table.csv"))
+write_csv(report_is_table_rename, here("./data_outputs/ccmethods_isinvolve_report_table.csv"))
 
 #Reporting Table 
-is_table_df_report <- read.csv(here("../data_outputs/ccmethods_isinvolve_report_table.csv"))
+is_table_df_report <- read.csv(here("./data_outputs/ccmethods_isinvolve_report_table.csv"))
 is_table_report <- is_table_df_report %>% gt() 
 
 gt_tbl_report <- 
@@ -563,7 +577,7 @@ gt_tbl_report <-
 gt_tbl_report
 
 #Save to image file
-gt_tbl_report |> gtsave(here("../plots/report_is_table.png"), expand = 10)
+gt_tbl_report |> gtsave(here("./plots/report_is_table.png"), expand = 10)
 
 
 ##Figure 7B. Line graph for IS impact on reporting variables----
@@ -630,5 +644,5 @@ pt_report_is <- ggplot(report_is_chart_renamed, aes(x = group, y = percentage, c
                 scale_color_manual(values = my_palette_14) #+
                 #theme(text = element_text(size=13))
 
-ggsave(here("../plots/fig7b.png"), plot = pt_report_is, width = 6, height = 4, units = "in", dpi = 300) 
+ggsave(here("./plots/fig7b.png"), plot = pt_report_is, width = 6, height = 4, units = "in", dpi = 300) 
 

@@ -16,7 +16,7 @@ library(lubridate)
 library(here)
 
 #Import data
-ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20230227-clean-recode.csv"), na = "NA")
+ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240222-clean-recode.csv"), na = "NA")
 
 
 #Time lag between search and publication --------------------
@@ -41,7 +41,7 @@ pt_hist_timelag <- ggplot(ccmethods_data, aes(x = search_lag)) +
                     scale_x_continuous(breaks = seq(from = 0, to = 100, by = 25), limits = c(0, 100)) #+
                     #theme(text = element_text(size=15))
 
-ggsave(here("../plots/fig8a.png"), plot = pt_hist_timelag, width = 6, height = 4, units = "in", dpi = 300) 
+ggsave(here("./plots/fig8a.png"), plot = pt_hist_timelag, width = 6, height = 4, units = "in", dpi = 300) 
 
 ##Figure 8b. Box plot comparing Coordinating groups----
 
@@ -63,7 +63,7 @@ pt_box_timelag <- ggplot(mydata_sep_lag, aes(x = cg, y = search_lag)) +
                   scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
                   labs(x="Coordinating Group", y=("Number of months"))
 
-ggsave(here("../plots/fig8b.png"), plot = pt_box_timelag, width = 6, height = 4, units = "in", dpi = 300) 
+ggsave(here("./plots/fig8b.png"), plot = pt_box_timelag, width = 6, height = 4, units = "in", dpi = 300) 
 
 
 ##ANOVA: Differences between coordinating groups using one-way ANOVA----
@@ -95,10 +95,10 @@ table(ccmethods_data$refman_software, useNA = "always")
 just_ref_software <- ccmethods_data %>% subset(refman_software == "yes") %>% 
   select(refman_software_text)
 
-write.csv(just_ref_software, here("../data_outputs/refman_software.csv"))
+write.csv(just_ref_software, here("./data_outputs/refman_software.csv"))
 
 #Import csv file after manually identifying tool used
-ref_tools <- read.csv(here("../data_outputs/refman_software_clean.csv"))
+ref_tools <- read.csv(here("./data_outputs/refman_software_clean.csv"))
 nrow(ref_tools)
 
 ref_tools %>%
@@ -165,12 +165,12 @@ exp_perc_yes <- ccmethods_data %>%
   summarize(exp_perc_yes = mean(experts == 'yes', na.rm = TRUE) * 100) %>%
   pull(exp_perc_yes) |> round(digits=1)
 
-#Searched gray literature
+#Searched grey literature
 grey_yes <- sum(ccmethods_data$conf_proc == "yes" | ccmethods_data$theses == "yes" | ccmethods_data$govt == "yes" | ccmethods_data$ngo == "yes")
 grey_percent <- grey_yes/nrow(ccmethods_data)*100 |> round(digits=1)
 
 
-#Create new column combining all gray lit columns (for use below)
+#Create new column combining all grey lit columns (for use below)
 ccmethods_data$all_grey <- ifelse(ccmethods_data$conf_proc == "yes" | ccmethods_data$theses == "yes" | ccmethods_data$govt == "yes" | ccmethods_data$ngo == "yes", "yes", 
                                    ifelse(ccmethods_data$conf_proc != "yes" & ccmethods_data$theses != "yes" & ccmethods_data$govt != "yes" & ccmethods_data$ngo != "yes", "no", "unclear"))
 
@@ -190,17 +190,18 @@ ccmethods_data$search_lag <- round(ccmethods_data$search_lag)
 lag_24 <- sum(ccmethods_data$search_lag <= 24)
 lag_24_percent <- lag_24/nrow(ccmethods_data)*100 |> round(digits=1)
 
+#Partial Yes adherence: at least 2 databases, provided at least one search strategy, justified restrictions
+ccmethods_data$amstar_partial_yes <- ifelse(ccmethods_data$two_db == "yes" & ccmethods_data$strategy_one == "yes" & ccmethods_data$limit_just_amstar == "yes", "yes", "no") 
+partial_yes <- sum(ccmethods_data$amstar_partial_yes == "yes")
+partial_yes_only <- partial_yes - full_yes
+partial_yes_perc <- ((partial_yes_only/nrow(ccmethods_data)) * 100) |> round(digits=1)
+
 #Full Yes adherence: all partial plus backward citation searching, searched trials/registries, consulted experts, searched grey literature, conducted search within 24 months
 ccmethods_data$amstar_full_yes <- ifelse(ccmethods_data$amstar_partial_yes == "yes" & ccmethods_data$backward == "yes" & ccmethods_data$experts == "yes" & ccmethods_data$all_grey == "yes" & ccmethods_data$search_lag <= 24, "yes", "no") 
 full_yes <- sum(ccmethods_data$amstar_full_yes == "yes")
 full_yes_perc <- ((full_yes/nrow(ccmethods_data)) * 100) |> round(digits=1)
 
 
-#Partial Yes adherence: at least 2 databases, provided at least one search strategy, justified restrictions
-ccmethods_data$amstar_partial_yes <- ifelse(ccmethods_data$two_db == "yes" & ccmethods_data$strategy_one == "yes" & ccmethods_data$limit_just_amstar == "yes", "yes", "no") 
-partial_yes <- sum(ccmethods_data$amstar_partial_yes == "yes")
-partial_yes_only <- partial_yes - full_yes
-partial_yes_perc <- ((partial_yes_only/nrow(ccmethods_data)) * 100) |> round(digits=1)
 
 #Calculate number and percent of No ratings (total number of reviews minus number of Partial Yes ratings)
 no_amst_num <- nrow(ccmethods_data) - partial_yes

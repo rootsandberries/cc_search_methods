@@ -12,7 +12,7 @@ library(ggpubr)
 library(here)
 
 #Import data
-ccmethods_data <- read.csv(here("../data/CC-methods-data-extraction-final-20230227-clean-recode.csv"), na = "NA")
+ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240222-clean-recode.csv"), na = "NA")
 
 #Source reporting ---------------------------------
 
@@ -94,7 +94,7 @@ db_counts$variable_name_ordered <- recode_factor(db_counts$variable_name_ordered
                                                  db_list_gp = "Databases and sub-databases", 
                                                  db_platform = "Database platforms",
                                                  date_range = "Database date ranges",
-                                                 grey_list = "grey literature sources",
+                                                 grey_list = "Grey literature sources",
                                                  grey_url = "Website URLs")
 
 #Define order of values
@@ -113,9 +113,12 @@ pt_source_rp <- ggplot(db_counts, aes(fill=value, y=n, x=variable_name_ordered))
                   theme(axis.text.x = element_text(size = 11)) +
                   coord_flip()
 
-ggsave(here("../plots/fig1.png"), plot = pt_source_rp, width = 6, height = 4, units = "in", dpi = 300) 
+ggsave(here("./plots/fig1.png"), plot = pt_source_rp, width = 6, height = 4, units = "in", dpi = 300) 
 
 #For in text results, more detail about database descriptions
+table(ccmethods_data$db_list, useNA = "always")
+prop.table(table(ccmethods_data$db_list)) * 100
+
 table(ccmethods_data$db_platform, useNA = "always")
 prop.table(table(ccmethods_data$db_platform)) * 100
 
@@ -125,9 +128,14 @@ prop.table(table(ccmethods_data$date_range)) * 100
 table(ccmethods_data$db_list_gp, useNA = "always")
 prop.table(table(ccmethods_data$db_list_gp)) * 100
 
-#Percent reporting website urls
+#Number and percent reporting website urls
 table(ccmethods_data$grey_url, useNA = "always")
 prop.table(table(ccmethods_data$grey_url)) * 100
+
+#Number and percent reporting grey lit sources
+table(ccmethods_data$grey_list, useNA = "always")
+prop.table(table(ccmethods_data$grey_list)) * 100
+
 
 #Source selection --------------------------------
 
@@ -153,7 +161,7 @@ mydata_sep <- mydata_sep %>%
 #Remove Nutrition since its a subgroup of International Development (and all of the Nutrition reviews are also ID reviews)
 mydata_sep <- subset(mydata_sep, cg != "Nutrition")
 
-##Option 1 (used in manuscript) --Heat map option
+##Figure 2. Option 1 (used in manuscript) --Heat map option
 
 #Subset only needed variables
 db2_subset <- mydata_sep[, c("cg", "conf_proc", "theses", "trials_reg", "govt_ngo")]
@@ -191,9 +199,36 @@ pt_heat_grey <- ggplot(df_summary_long, aes(variable, cg, fill = value)) +
                 scale_x_discrete(position="top") +
                 scale_y_discrete(labels = function(x) str_wrap(x, width = 25))
 
-ggsave(here("../plots/fig2.png"), plot = pt_heat_grey, width = 9.5, height = 6, units = "in", dpi = 300) 
+ggsave(here("./plots/fig2.png"), plot = pt_heat_grey, width = 9.5, height = 6, units = "in", dpi = 300) 
 
 
+#Additional in text results ----
+
+#Percent searching at least 2 relevant databases
+prop.table(table(ccmethods_data$two_db)) * 100
+table(ccmethods_data$two_db)
+
+#Percent searching regional databases
+prop.table(table(ccmethods_data$geog_db)) * 100
+
+#Percent searching Google Scholar and other free scholarly search engines
+prop.table(table(ccmethods_data$free_gs)) * 100
+table(ccmethods_data$free_gs)
+
+#Percent searching Google and other free search engines
+prop.table(table(ccmethods_data$engine_google)) * 100
+table(ccmethods_data$engine_google)
+
+#Percent reference Kugley guidance
+prop.table(table(ccmethods_data$kugley)) * 100
+table(ccmethods_data$kugley)
+
+#How many reviews did no web searching?
+no_web <- ccmethods_data %>%
+  filter(govt == "no", ngo == "no", free_gs == "no", engine_google == "no")
+nrow(no_web)
+
+#Figures not used in manuscript -----
 #These are alternative versions of Figure 2 not used in the manuscript
 
 ##Figure 2. Option 2 (not used)--Side-by-side bar charts
@@ -297,29 +332,4 @@ ggplot(df_summary_long, aes(variable, cg, colour = variable, size = value)) +
         panel.grid = element_blank(),
         axis.ticks = element_blank())
 
-#Additional in text results ----
-
-#Percent searching at least 2 relevant databases
-prop.table(table(ccmethods_data$two_db)) * 100
-table(ccmethods_data$two_db)
-
-#Percent searching regional databases
-prop.table(table(ccmethods_data$geog_db)) * 100
-
-#Percent searching Google Scholar and other free scholarly search engines
-prop.table(table(ccmethods_data$free_gs)) * 100
-table(ccmethods_data$free_gs)
-
-#Percent searching Google and other free search engines
-prop.table(table(ccmethods_data$engine_google)) * 100
-table(ccmethods_data$engine_google)
-
-#Percent reference Kugley guidance
-prop.table(table(ccmethods_data$kugley)) * 100
-table(ccmethods_data$kugley)
-
-#How many reviews did no web searching?
-no_web <- ccmethods_data %>%
-  filter(govt == "no", ngo == "no", free_gs == "no", engine_google == "no")
-nrow(no_web)
 

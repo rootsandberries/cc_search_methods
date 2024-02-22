@@ -14,24 +14,56 @@ library(ggplot2)
 library(here)
 
 #Import data
-ccmethods_data <- read.csv(here("../data/CC-methods-data-extraction-final-20230227-clean-recode.csv"), na = "NA")
+ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240222-clean-recode.csv"), na = "NA")
 
 
 #Supplementary searching -------------------------------------
+
+##In text results ----
+
+#Number and percent using handsearching 
+table(ccmethods_data$handsearch)
+prop.table(table(ccmethods_data$handsearch)) * 100
+
+#Number and percent using backward citation searching
+table(ccmethods_data$backward)
+prop.table(table(ccmethods_data$backward)) * 100
+
+#Number and percent using forward citation searching
+table(ccmethods_data$forward)
+prop.table(table(ccmethods_data$forward)) * 100
+
+#Number and percent searching references of related reviews
+table(ccmethods_data$reviews)
+prop.table(table(ccmethods_data$reviews)) * 100
+
+#Number and percent contacting experts
+table(ccmethods_data$experts)
+prop.table(table(ccmethods_data$experts)) * 100
+
+#Number using listservs
+table(ccmethods_data$experts_listserv)
+
+#Additional information about handsearching
+handsearch_yes <- subset(ccmethods_data, handsearch == 'yes')
+
+#Number and percent handsearching journals (of those conducting handsearching)
+table(handsearch_yes$hand_journ)
+prop.table(table(handsearch_yes$hand_journ)) * 100
+
+#Number and percent handsearching conference proceedings (of those conducting handsearching)
+table(handsearch_yes$hand_conf)
+prop.table(table(handsearch_yes$hand_conf)) * 100
+
+#Number providing dates or issues of journals handsearched was hand calculated
+
 
 ##Figure 5: Supplementary search reporting ----
 ##Bar chart: Number reporting handsearching, forward and backward citation searching, contacting experts, related reviews
 ##Count bars in shades of gray for number yes, no and unclear reporting on each
 ##Relevant variables: handsearch, experts, backward, forward, reviews
 
-table(ccmethods_data$handsearch)
-table(ccmethods_data$backward)
-table(ccmethods_data$forward)
-table(ccmethods_data$reviews)
-table(ccmethods_data$experts)
-
-
-#Subset the needed variables
+#Subset the needed variables for figure
 db_subset_supp <- ccmethods_data[, c("handsearch", "experts", "backward", "forward", "reviews")]
 
 #Convert all to factors and set level orders
@@ -79,5 +111,5 @@ pt_supp <- ggplot(db_counts_supp, aes(fill=value, y=n, x=variable_name_ordered))
             theme(axis.text.x = element_text(size = 10), legend.box = "horizontal") +
             coord_flip() 
 
-ggsave(here("../plots/fig5.png"), plot = pt_supp, width = 6, height = 4, units = "in", dpi = 300) 
+ggsave(here("./plots/fig5.png"), plot = pt_supp, width = 6, height = 4, units = "in", dpi = 300) 
 
