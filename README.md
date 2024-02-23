@@ -6,7 +6,7 @@ We assessed the search reporting and conduct of Campbell Collaboration systemati
 
 - [Project Structure](#project-structure)
 - [Scripts](#scripts)
-- [Dataset](#dataset)
+- [Data](#data)
 - [Data Outputs](#data-outputs)
 - [Plots](#plots)
 
