@@ -464,7 +464,7 @@ pt_conduct_is <- ggplot(conduct_is_chart_renamed, aes(x = group, y = percentage,
                   geom_point() +
                   labs(title = "",
                   x = "",
-                  y = "Percent",
+                  y = "Percent of reviews",
                   color = "Variable") +
                   theme_minimal() +
                   theme(legend.title=element_blank()) +
@@ -526,9 +526,9 @@ report_is_table_rename <- report_is_table %>%
     variable == "db_platform" ~ "Database platform reported",
     variable == "deduplicate" ~ "Deduplication method reported",
     variable == "forward_method" ~ "Method for forward citation searching described",
-    variable == "grey_list" ~ "grey lit sources listed",
-    variable == "grey_search" ~ "grey lit search reported",
-    variable == "grey_url" ~ "grey lit URLs reported",
+    variable == "grey_list" ~ "Grey lit sources listed",
+    variable == "grey_search" ~ "Grey lit search reported",
+    variable == "grey_url" ~ "Grey lit URLs reported",
     variable == "refman_software" ~ "Reference management software reported",
     variable == "strategy_all" ~ "All search strategies reported",
     variable == "num_records" ~ "Number of records per database reported"
@@ -536,8 +536,8 @@ report_is_table_rename <- report_is_table %>%
 
 #Reorder with custom order 
 report_custom_order <- c("All search strategies reported","All databases and sub-databases listed","Database platform reported",
-                         "Search dates reported", "grey lit sources listed", "grey lit search reported",
-                         "grey lit URLs reported", "Method for forward citation searching described",
+                         "Search dates reported", "Grey lit sources listed", "Grey lit search reported",
+                         "Grey lit URLs reported", "Method for forward citation searching described",
                          "Reference management software reported", "Deduplication method reported",
                          "Number of records per database reported")
 
@@ -608,16 +608,16 @@ report_is_chart_renamed <- report_is_chart_long %>%
     variable == "db_platform" ~ "Database platform",
     variable == "deduplicate" ~ "Dedup method",
     variable == "forward_method" ~ "Forward citation method",
-    variable == "grey_list" ~ "grey lit sources",
-    variable == "grey_search" ~ "grey lit search",
-    variable == "grey_url" ~ "grey lit URLs",
+    variable == "grey_list" ~ "Grey lit sources",
+    variable == "grey_search" ~ "Grey lit search",
+    variable == "grey_url" ~ "Grey lit URLs",
     variable == "refman_software" ~ "Ref mgmt software",
     variable == "strategy_all" ~ "All search strategies",
     variable == "num_records" ~ "Number of database results"
   ))
 
 #Reorder so that the legend list matches the order of values in the No IS column
-custom_order_isrp <- c("grey lit sources", "Search dates", "Forward citation method", "Database names", "Database platform", "Ref mgmt software", "All search strategies", "grey lit search", "Number of database results", "grey lit URLs", "Dedup method")
+custom_order_isrp <- c("Grey lit sources", "Search dates", "Forward citation method", "Database names", "Database platform", "Ref mgmt software", "All search strategies", "Grey lit search", "Number of database results", "Grey lit URLs", "Dedup method")
 report_is_chart_renamed$variable <- factor(report_is_chart_renamed$variable, levels = custom_order_isrp)
 
 #Create distinguishable palette for 11 variables

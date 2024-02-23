@@ -22,10 +22,13 @@ The repository contains five R script files and the original cleaned and recoded
 4. **cc_methods_part4_is.R:** This script provides the code used to generate the plots and statistics related to information specialist involvement. 
 5. **cc_methods_part5_other.R:** This script provides the code used to generate the plots and statistics related to the other considerations section including information management and timeliness of the search.
 
-## Dataset
+## Data
 
-**CC-methods-data-extraction-final-20230227-clean-recode.csv**    
-This file contains the extracted data from all included studies in the assessment (n=86). For more details about variable names and the complete data extraction tool, see the final manuscript. This file is used with the scripts above to generate the plots and tables.
+1. **CC-methods-data-extraction-final-20240222-clean-recode.csv**    
+This is the dataset. It contains the extracted data from all included studies in the assessment (n=85). For more details about variable names and the complete data extraction tool, see the final manuscript. This file is used with the scripts above to generate the plots and tables.
+2. **Data Extraction Form Items and Variable Names.xlsx**
+This file contains the items included in the data extraction and the associated variable names that appear in the dataset.
+
 
 ## Data outputs
 
