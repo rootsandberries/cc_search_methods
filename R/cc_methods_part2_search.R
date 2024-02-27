@@ -274,10 +274,7 @@ result_report_df <- report_long %>%
 
 result_report_df$percent <- round(result_report_df$percent, 1)
 
-#Filter out pre-2015 and post-2020 due to low numbers
-time_rp_df_1520 <- result_report_df %>% filter(pub_year >= 2015 & pub_year <= 2020)
-
-time_rp_df_1520 <- time_rp_df_1520 %>% 
+result_report_df <- result_report_df %>% 
   mutate(variable = 
            forcats::fct_recode(variable,
                                "Search updated" = "update_search",
@@ -293,7 +290,7 @@ time_rp_df_1520 <- time_rp_df_1520 %>%
                                "All search strategies" = "strategy_all",
                                "Search date"= "date_searches"))
 
-time_rp_df_1520 <- time_rp_df_1520 %>% 
+result_report_df <- result_report_df %>% 
   mutate(variable = factor(variable,
                            levels = c("All databases", "Database platform", "Grey lit sources",
                                       "Website URLs", "All search strategies", "Grey lit searches",
@@ -301,7 +298,7 @@ time_rp_df_1520 <- time_rp_df_1520 %>%
                                       "Forward citation method", "Deduplication method", "Ref Management Software")))
 
 #Small multiple plot of conduct variables
-pt_time_report <- ggplot(time_rp_df_1520, aes(x = pub_year, y = percent)) +
+pt_time_report <- ggplot(result_report_df, aes(x = pub_year, y = percent)) +
                     geom_line() +
                     facet_wrap(~ variable, ncol = 3, scales="fixed") +
                     labs(x = "Year", y = "Percent") +
