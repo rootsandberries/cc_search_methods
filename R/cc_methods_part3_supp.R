@@ -14,7 +14,7 @@ library(ggplot2)
 library(here)
 
 #Import data
-ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240222-clean-recode.csv"), na = "NA")
+ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240508-clean-recode.csv"), na = "NA")
 
 
 #Supplementary searching -------------------------------------
@@ -56,7 +56,7 @@ table(handsearch_yes$hand_conf)
 prop.table(table(handsearch_yes$hand_conf)) * 100
 
 #Number providing dates or issues of journals handsearched was hand calculated
-
+#Manual count
 
 ##Figure 5: Supplementary search reporting ----
 ##Bar chart: Number reporting handsearching, forward and backward citation searching, contacting experts, related reviews

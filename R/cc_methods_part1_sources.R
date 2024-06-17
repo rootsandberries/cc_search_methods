@@ -12,7 +12,7 @@ library(ggpubr)
 library(here)
 
 #Import data
-ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240222-clean-recode.csv"), na = "NA")
+ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240508-clean-recode.csv"), na = "NA")
 
 #Source reporting ---------------------------------
 
@@ -67,7 +67,7 @@ db1_subset$grey_list <- db1_subset$grey_list %>%
     none = "None")
 
 #How many reviews provided a full list of grey literature sources?
-summary(db1_subset$grey_list) #73
+summary(db1_subset$grey_list) #91
 
 db1_subset$grey_url <- db1_subset$grey_url %>% 
   factor(levels=ordered(c("all", "some", "none"))) %>% 
@@ -185,9 +185,15 @@ levels(df_summary_long$variable)
 levels(df_summary_long$variable) <- c("Conference Proceedings", "Govt, NGO, INGO Websites", 
                                       "Theses & Dissertations", "Trials & Registries")
 
-#Reorganize so there is some order to percentages: govt, trials, theses, conf and by most comprehensive cg.
+#Reorganize so there is some order to percentages: govt, trials, theses, conf.
 df_summary_long$variable <- factor(df_summary_long$variable, levels = c("Govt, NGO, INGO Websites", "Trials & Registries", 
                                                                         "Theses & Dissertations", "Conference Proceedings"))
+
+#Reorganize so there is some order to coordinating group (number of reviews): International Development, Education, Social Welfare, Crime and Justice, Disability, Ageing, Business and Management, Knowledge Translation, Methods
+df_summary_long$cg <- factor(df_summary_long$cg, levels = c("Methods", "Knowledge Translation and Implementation", "Business and Management", 
+                                                            "Ageing", "Disability", "Crime and Justice", "Social Welfare", 
+                                                            "Education", "International Development"))
+
 
 #Plot heatmap
 pt_heat_grey <- ggplot(df_summary_long, aes(variable, cg, fill = value)) +
@@ -214,6 +220,14 @@ prop.table(table(ccmethods_data$geog_db)) * 100
 #Percent searching Google Scholar and other free scholarly search engines
 prop.table(table(ccmethods_data$free_gs)) * 100
 table(ccmethods_data$free_gs)
+
+#Percent searching Microsoft Academic and other free scholarly search engines
+prop.table(table(ccmethods_data$free_ma)) * 100
+table(ccmethods_data$free_ma)
+
+#Percent searching Dimensions and other free scholarly search engines
+prop.table(table(ccmethods_data$free_dim)) * 100
+table(ccmethods_data$free_dim)
 
 #Percent searching Google and other free search engines
 prop.table(table(ccmethods_data$engine_google)) * 100

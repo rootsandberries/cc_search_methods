@@ -8,8 +8,8 @@
 13,"""We used the EPPI-Reviewer 4 bibliographic software (Thomas et al, 2010) to manage retrieved references.""",EPPI-Reviewer
 16,This information was stored in a Reference Manager database.,Reference Manager
 18,The results of each search were imported into EndNote reference management software where the initial title and abstract screening took place.,Endnote
-21,"References identified through database and grey literature searching were screened independently, in duplicate by two members of the research team using Covidence software.",
-23,"Zotero, a reference management software program was used to retrieve, store, and document the search process. Each database had its own file folder within Zotero and was searched individually.",
+21,"References identified through database and grey literature searching were screened independently, in duplicate by two members of the research team using Covidence software.",Covidence
+23,"Zotero, a reference management software program was used to retrieve, store, and document the search process. Each database had its own file folder within Zotero and was searched individually.",Zotero
 25,All studies retrieved from our search were inputted to Endnote and then duplicate records were removed.,Endnote
 28,"Endnote X7 software was used to manage references, citations and documents. Data extracted to characterise studies was inputted in STATA v.13 in order to produce inferential/descriptive statistics. Effect sizes were inputted in Version 3.0 of the Comprehensive Meta-Analysis software.",Endnote
 31,"As outlined in the protocol, titles were reviewed initially in Endnote by the lead author to remove any studies which were clearly irrelevant...Reasons for exclusion were independently reported by both reviewers in 
@@ -39,7 +39,7 @@ contacts made. When screening full papers, we used the EPPI-Reviewer 4
 58,"""Then we ran the search for each intervention. We then combined both searches by using “AND” and kept the searches in a separate EndNote file.""",Endnote
 59,"In order to ensure replicability, all searches were stored into Covidence, an online software product developed by Cochrane community for screening studies and extracting data for systematic reviews.",Covidence
 60,We used the EPPI‐reviewer software to track the search and screening process,EPPI-Reviewer
-61,"We imported the records from academic databases into our data management software (EPPI-Reviewer 4), and we used the built-in tool to aid in removing duplicates. The gray literature was imported into and managed in Microsoft Excel due to reference format incompatibility with EPPI-Reviewer 4.",EPPI-Reviewer
+61,"We imported the records from academic databases into our data management software (EPPI-Reviewer 4), and we used the built-in tool to aid in removing duplicates. The grey literature was imported into and managed in Microsoft Excel due to reference format incompatibility with EPPI-Reviewer 4.",EPPI-Reviewer
 67,"Search results were downloaded in files that contained their full reference information, titles, and abstracts and subsequently imported into the EndNote X8 reference manager program",Endnote
 69,We imported all search results into EPPI-Reviewer 41 and removed duplicates,EPPI-Reviewer
 71,"""We began by importing all search results into EPPI-Reviewer 4 (Thomas et al., 2010)""",EPPI-Reviewer
@@ -51,6 +51,19 @@ contacts made. When screening full papers, we used the EPPI-Reviewer 4
 78,"We imported all search results into EPPI-Reviewer 4 (Thomas & Brunton, 2010) and removed duplicates through the EPPI-Reviewer 4 deduplication process.",EPPI-Reviewer
 79,"For each of the two rounds, the search results were saved in an electronic format using the reference manager software Endnotes",Endnote
 80,Independent screening and deduplication of identified records was carried out in EPPI-Reviewer 4 version 4.12.0.0.,EPPI-Reviewer
-83,"We exported the full set of search results directly into an Endnote X9 Library. Where this was not possible, search results were manually entered into the Endnote Library. The Endnote library made it easier to identify duplicates and manage references.
+82,"We exported the full set of search results directly into an Endnote X9 Library. Where this was not possible, search results were manually entered into the Endnote Library. The Endnote library made it easier to identify duplicates and manage references.
 First, we exported search results from the various databases and search engines into an Endnote X9 software. Second, we searched for and removed duplicates using the Endnote software.",Endnote
-85,"We used Zotero to manage references and implement the search strategy below. In addition, we recorded the following information for each conducted search: the date of search, database/website searched, the final search syntax, any modifications or restrictions to the search string, the reported yield from the source, as well as the final yield of studies subsequently exported into Zotero. For database searches in particular, a reported yield would be different than what was exported to Zotero.",Zotero
+84,"We used Zotero to manage references and implement the search strategy below. In addition, we recorded the following information for each conducted search: the date of search, database/website searched, the final search syntax, any modifications or restrictions to the search string, the reported yield from the source, as well as the final yield of studies subsequently exported into Zotero. For database searches in particular, a reported yield would be different than what was exported to Zotero.",Zotero
+86,"After searches were performed, all search results were downloaded into Endnote X9 and stored in a shared library that all reviewers andresearch assistants had access to…",Endnote
+87,Titles and abstracts for all records captured in our search were be exported into EndNote for de-duplication and the imported into DistillerSR reference management software for screening.,Endnote
+88,"When possible, references were exported to EndNote and 35,406 duplicates were eliminated before title/abstract screening. Thus, 86,591 studies were screened at the title/abstract stage.",Endnote
+91,"All records retrieved by the systematic search were imported to Endnote for removal of duplicates and ineligible document types (e.g., blog posts, book reviews) and the remaining records were exported to SysReview (Higginson & Neville, 2014) for screening and coding.",Endnote
+92,Independent screening and deduplication of identified records was carried out in EPPI‐Reviewer 4 version 4.12.0.0.,EPPI-Reviewer
+94,"The results from all three searches were combined, exported, and deduplicated using the reference management software EPPI reviewer 4,",EPPI-Reviewer
+95,Records identified in the searches were entered into EndNote v9 and duplicates removed.;We used EndNote x9 software to remove duplicates in the search,Endnote
+97,"Studies identified in the search that were not already included in the EGMs were screened against the inclusion criteria for eligibility by two independent screeners using EndNote at both title and abstract, and full text stage, with recourse to a third reviewer if there were any discrepancies.",Endnote
+98,Bibliographic data for retrieved studies were managed using Zotero bibliographic software.,Zotero
+100,Duplicates (n = 8177) were removed using the duplication detection features of EndNote and Covidence,Endnote
+102,"All references were imported into the reference manager software EndNote X9 (EndNote, 2013) and duplicates were removed",Endnote
+103,"Titles, abstracts, and other citation information for all search records (both the original 2019 search and the 2021 and 2023 updates) in English were exported as RIS files and uploaded into Zotero for de-duplication.;... were exported as RIS files and uploaded into Zotero for de-duplication",Zotero
+109,all links to study reports were extracted and added to Covidence … References were managed using Mendeley,Mendeley

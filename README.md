@@ -1,6 +1,6 @@
 # Searching and reporting in Campbell Collaboration systematic reviews: An assessment of current methods
 
-We assessed the search reporting and conduct of Campbell Collaboration systematic reviews since 2017. This repository provides the R code, datasets and outputs associated with this project. The protocol for this project can be found at [https://doi.org/10.1002/cl2.1208](https://doi.org/10.1002/cl2.1208),.
+We assessed the search reporting and conduct of Campbell Collaboration systematic reviews since 2017. This repository provides the R code, datasets and outputs associated with this project. The protocol for this project can be found at [https://doi.org/10.1002/cl2.1208](https://doi.org/10.1002/cl2.1208).
 
 ## Contents
 
@@ -12,7 +12,7 @@ We assessed the search reporting and conduct of Campbell Collaboration systemati
 
 ## Project Structure
 
-The repository contains five R script files and the original cleaned and recoded dataset. The Data Outputs directory includes intermediate datasets that are needed to generate supplementary tables and to assess reference management software usage from an unstructure data field. The plots directory contains all of the plots and tables included in the manuscript that were generated in R.
+The repository contains five R script files and the original cleaned and recoded dataset. The Data Outputs directory includes intermediate datasets that are needed to generate supplementary tables and to assess reference management software usage from an unstructured data field. The plots directory contains all of the plots and tables included in the manuscript that were generated in R.
 
 ## Scripts
 
@@ -24,8 +24,8 @@ The repository contains five R script files and the original cleaned and recoded
 
 ## Data
 
-1. **CC-methods-data-extraction-final-20240222-clean-recode.csv**    
-This is the dataset. It contains the extracted data from all included studies in the assessment (n=85). For more details about variable names and the complete data extraction tool, see the final manuscript. This file is used with the scripts above to generate the plots and tables.
+1. **CC-methods-data-extraction-final-20240508-clean-recode.csv**    
+This is the dataset. It contains the extracted data from all included studies in the assessment (n=111). For more details about variable names and the complete data extraction tool, see the final manuscript. This file is used with the scripts above to generate the plots and tables.
 2. **Data Extraction Form Items and Variable Names.xlsx**
 This file contains the items included in the data extraction and the associated variable names that appear in the dataset.
 

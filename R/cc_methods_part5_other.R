@@ -16,7 +16,7 @@ library(lubridate)
 library(here)
 
 #Import data
-ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240222-clean-recode.csv"), na = "NA")
+ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240508-clean-recode.csv"), na = "NA")
 
 
 #Time lag between search and publication --------------------
@@ -37,7 +37,7 @@ ccmethods_data$search_lag <- round(ccmethods_data$search_lag)
 pt_hist_timelag <- ggplot(ccmethods_data, aes(x = search_lag)) +
                     geom_histogram(color="black", fill="lightgray", binwidth = 3) + theme_light() +
                     labs(x = str_wrap("Number of months between search date and publication date", width=50), y="Number of reviews") +
-                    scale_y_continuous(breaks = seq(from = 0, to = 12, by = 2), limits = c(0, 12)) +
+                    scale_y_continuous(breaks = seq(from = 0, to = 15, by = 2), limits = c(0, 15)) +
                     scale_x_continuous(breaks = seq(from = 0, to = 100, by = 25), limits = c(0, 100)) #+
                     #theme(text = element_text(size=15))
 
@@ -50,7 +50,8 @@ mydata_sep_lag <- separate_rows(ccmethods_data, cg, sep=";")
 
 #Remove groups with very few reviews
 mydata_sep_lag <- mydata_sep_lag %>% subset(cg != "Nutrition") %>% 
-  subset(cg != "Methods") %>% subset(cg != "Knowledge Translation and Implementation")
+  subset(cg != "Methods") %>% subset(cg != "Knowledge Translation and Implementation") %>% 
+  subset(cg != "Ageing") %>% subset(cg != "Business and Management")
 
 #Plot boxplot by coordinating group and label outliers
 pt_box_timelag <- ggplot(mydata_sep_lag, aes(x = cg, y = search_lag)) +

@@ -11,7 +11,7 @@ library(ggplot2)
 library(here)
 
 #Import data
-ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240222-clean-recode.csv"), na = "NA")
+ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240508-clean-recode.csv"), na = "NA")
 
 
 #Search quality -----------------------------------
@@ -174,11 +174,11 @@ result_conduct_df <- conduct_long %>%
 
 result_conduct_df$percent <- round(result_conduct_df$percent, 1)
 
-#Filter out pre-2015 and post-2020 due to low numbers
-time_cd_df_1520 <- result_conduct_df %>% filter(search_year >= 2015 & search_year <= 2020)
+#Filter out pre-2015 and post-2023 due to low numbers
+time_cd_df_1523 <- result_conduct_df %>% filter(search_year >= 2015 & search_year <= 2023)
 
 #Recode variable names and reorder
-time_cd_df_1520 <- time_cd_df_1520 %>% 
+time_cd_df_1523 <- time_cd_df_1523 %>% 
   mutate(variable = 
            forcats::fct_recode(variable,
                                "Backward searching" = "backward",
@@ -194,7 +194,7 @@ time_cd_df_1520 <- time_cd_df_1520 %>%
                                "Database subheadings" = "subhead",
                                "Database syntax"= "syntax"))
 
-time_cd_df_1520 <- time_cd_df_1520 %>% 
+time_cd_df_1523 <- time_cd_df_1523 %>% 
   mutate(variable = factor(variable,
                            levels = c("Boolean operators", "Keyword variation", "Database syntax",
                                       "Phrase searching", "Database subheadings", "Google searched",
@@ -202,7 +202,7 @@ time_cd_df_1520 <- time_cd_df_1520 %>%
                                       "Forward searching", "Related reviews", "Experts contacted")))
 
 #Small multiple plot of conduct variables
-pt_time_conduct <- ggplot(time_cd_df_1520, aes(x = search_year, y = percent)) +
+pt_time_conduct <- ggplot(time_cd_df_1523, aes(x = search_year, y = percent)) +
                     geom_line() +
                     facet_wrap(~ variable, ncol = 3, scales="fixed") +
                     labs(x = "Year", y = "Percent") +
@@ -297,8 +297,12 @@ result_report_df <- result_report_df %>%
                                       "Search date", "Number of results", "Search updated", 
                                       "Forward citation method", "Deduplication method", "Ref Management Software")))
 
-#Small multiple plot of conduct variables
-pt_time_report <- ggplot(result_report_df, aes(x = pub_year, y = percent)) +
+#Filter out 2024 due to low numbers
+result_report_df_23 <- result_report_df %>% filter(pub_year <= 2023)
+
+
+#Small multiple plot of reporting variables
+pt_time_report <- ggplot(result_report_df_23, aes(x = pub_year, y = percent)) +
                     geom_line() +
                     facet_wrap(~ variable, ncol = 3, scales="fixed") +
                     labs(x = "Year", y = "Percent") +

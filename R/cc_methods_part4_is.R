@@ -14,7 +14,7 @@ library(RColorBrewer)
 library(here)
 
 #Import data
-ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240222-clean-recode.csv"), na = "NA")
+ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240508-clean-recode.csv"), na = "NA")
 
 
 #IS involvement -------------------------------------
@@ -47,6 +47,10 @@ prop.table(table(ccmethods_data_is$infosp_coauthor)) * 100
 
 table(ccmethods_data_is$infosp_ackn)
 prop.table(table(ccmethods_data_is$infosp_ackn)) * 100
+
+table(ccmethods_data_is$kugley)
+prop.table(table(ccmethods_data_is$kugley)) * 100
+
 
 ##Figure 6: Number reporting involvement of librarians at different levels (co-authorship, consulted, no IS) ----
 ##Count bars for number yes for each type of involvement
@@ -84,7 +88,7 @@ db_subset_infosp$infosp_none <- factor(db_subset_infosp$infosp_none, levels=orde
 db_long_infosp <- db_subset_infosp %>%
   gather(variable_name, value, -cg)
 
-#Remove second coordinating group name from cg column for cleaner repsentation of the data
+#Remove second coordinating group name from cg column for cleaner representation of the data
 db_long_infosp$cg <- sub(";.*", "", db_long_infosp$cg)
 
 #Group by variable name and count number of yes values
@@ -102,7 +106,7 @@ df_counts_infosp$variable_name_ordered <- recode_factor(df_counts_infosp$variabl
 
 
 #Plot stacked grouped bar chart
-my_palette <- brewer.pal(7, "Set3")
+my_palette <- brewer.pal(9, "Set3")
 
 pt_is <- ggplot(df_counts_infosp, aes(y=count, x=variable_name_ordered, fill=cg)) + 
           geom_bar(stat="identity") +
@@ -115,7 +119,7 @@ pt_is <- ggplot(df_counts_infosp, aes(y=count, x=variable_name_ordered, fill=cg)
           guides(fill = guide_legend(nrow=3, byrow=TRUE,title = NULL)) +
           scale_fill_manual(values = my_palette)
 
-ggsave(here("./plots/fig6.png"), plot = pt_is, width = 7, height = 5, units = "in", dpi = 300) 
+ggsave(here("./plots/fig6.png"), plot = pt_is, width = 8, height = 5, units = "in", dpi = 300) 
 
 
 #IS involvement, conduct and reporting ----
@@ -382,15 +386,15 @@ gt_tbl_conduct <-
     subtitle = "Conduct of searches"
   ) |>
   tab_spanner(
-    label = "No IS Involvement (n=29)",
+    label = "No IS Involvement (n=37)",
     columns = c(count.x, percentage.x)
   ) |>
   tab_spanner(
-    label = "IS consulted (n=33)",
+    label = "IS consulted (n=42)",
     columns = c(count.y, percentage.y)
   ) |>
   tab_spanner(
-    label = "IS co-author (n=24)",
+    label = "IS co-author (n=32)",
     columns = c(count, percentage)
   ) |>
   tab_options(
@@ -401,6 +405,7 @@ gt_tbl_conduct <-
 gt_tbl_conduct
 
 #Save to image file
+#Ensure that Google Chrome is running
 gt_tbl_conduct |> gtsave(here("./plots/conduct_is_table.png"), expand = 10)
 
 ##Figure 7A. Line graph for IS impact on conduct variables----
@@ -558,15 +563,15 @@ gt_tbl_report <-
     subtitle = "Reporting of searches"
   ) |>
   tab_spanner(
-    label = "No IS Involvement (n=29)",
+    label = "No IS Involvement (n=37)",
     columns = c(count.x, percentage.x)
   ) |>
   tab_spanner(
-    label = "IS consulted (n=33)",
+    label = "IS consulted (n=42)",
     columns = c(count.y, percentage.y)
   ) |>
   tab_spanner(
-    label = "IS co-author (n=24)",
+    label = "IS co-author (n=32)",
     columns = c(count, percentage)
   ) |>
   tab_options(
