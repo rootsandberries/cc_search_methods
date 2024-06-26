@@ -14,6 +14,15 @@ library(here)
 #Import data
 ccmethods_data <- read.csv(here("./data/CC-methods-data-extraction-final-20240508-clean-recode.csv"), na = "NA")
 
+#Data for Table 1.
+table(ccmethods_data$cg, useNA = "always")
+prop.table(table(ccmethods_data$cg)) * 100
+
+table(ccmethods_data$pub_year, useNA = "always")
+table(ccmethods_data$geog_focus, useNA = "always")
+table(ccmethods_data$update, useNA = "always")
+
+
 #Source reporting ---------------------------------
 
 ##Figure 1. Source reporting ----

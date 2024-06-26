@@ -4,13 +4,14 @@
 #Set up -----------------------------------------
 
 #Install packages
-#install.packages(c("tidyverse", "ggplot2", "ggpubr", "here"))
+#install.packages(c("tidyverse", "ggplot2", "gt", "RColorBrewer", "khroma", "here", ))
 
 #Load libraries
 library(tidyverse)
 library(ggplot2)
 library(gt)
 library(RColorBrewer)
+library(khroma)
 library(here)
 
 #Import data
@@ -106,7 +107,6 @@ df_counts_infosp$variable_name_ordered <- recode_factor(df_counts_infosp$variabl
 
 
 #Plot stacked grouped bar chart
-my_palette <- brewer.pal(9, "Set3")
 
 pt_is <- ggplot(df_counts_infosp, aes(y=count, x=variable_name_ordered, fill=cg)) + 
           geom_bar(stat="identity") +
@@ -117,7 +117,7 @@ pt_is <- ggplot(df_counts_infosp, aes(y=count, x=variable_name_ordered, fill=cg)
           coord_flip() +
           theme(legend.position = "bottom") +
           guides(fill = guide_legend(nrow=3, byrow=TRUE,title = NULL)) +
-          scale_fill_manual(values = my_palette)
+          scale_fill_muted()
 
 ggsave(here("./plots/fig6.png"), plot = pt_is, width = 8, height = 5, units = "in", dpi = 300) 
 
@@ -454,29 +454,24 @@ conduct_is_chart_renamed$variable <- factor(conduct_is_chart_renamed$variable, l
 
 #Plot change in percentage over groups
 #Create distinguishable palette for 14 variables
-my_palette_14 <- c25 <- c(
-  "dodgerblue2", "#E31A1C", # red
-  "green4",
-  "#6A3D9A", # purple
-  "#FF7F00", # orange
-  "black", "gold1", "orchid1", "deeppink1", "blue1", 
-  "darkturquoise", "green1", "yellow3", "brown"
-)
 
+my_palette_14 <- c("#000000", "#db6d00","#004949","#ff6db6",
+  "#490092","#006ddb","#924900", "#b66dff","#6db6ff","#009292", "#b6dbff",
+  "#920000","#24ff24","#ffb6db")
 
-pt_conduct_is <- ggplot(conduct_is_chart_renamed, aes(x = group, y = percentage, color = variable, group = variable)) +
-                  geom_line() +
-                  geom_point() +
-                  labs(title = "",
-                  x = "",
-                  y = "Percent of reviews",
-                  color = "Variable") +
-                  theme_minimal() +
-                  theme(legend.title=element_blank()) +
-                  scale_color_manual(values = my_palette_14)
+#Now with colorblind friendly palette and alternating symbols
+pt_conduct_is <- ggplot(conduct_is_chart_renamed, aes(x = group, y = percentage, color = variable, group = variable, shape = variable)) +
+  geom_line() +
+  geom_point(size = 3) +
+  labs(title = "",
+       x = "",
+       y = "Percent of reviews") +
+  theme_minimal() +
+  scale_color_manual(name = "Variable", labels = custom_order_iscd, values = my_palette_14) +
+  scale_shape_manual(name = "Variable", labels = custom_order_iscd, values = rep(c(15, 16), length(unique(conduct_is_chart_renamed$variable)) / 2)) +
+  theme(legend.title=element_blank()) 
 
 ggsave(here("./plots/fig7a.png"), plot = pt_conduct_is, width = 6, height = 4, units = "in", dpi = 300) 
-
 
 ##Table of reporting variables by IS involvement----
 #Subset reporting columns only for coauthor, mention and no involvement
@@ -626,28 +621,23 @@ custom_order_isrp <- c("Grey lit sources", "Search dates", "Forward citation met
 report_is_chart_renamed$variable <- factor(report_is_chart_renamed$variable, levels = custom_order_isrp)
 
 #Create distinguishable palette for 11 variables
-my_palette_11 <- c25 <- c(
-  "#E31A1C", # red
-  "green4",
-  "#6A3D9A", # purple
-  "#FF7F00", # orange
-  "black", "gold1", "deeppink1", "blue1", 
-  "darkturquoise", "green1", "brown"
-)
+my_palette_11 <- c("#000000", "#db6d00","#004949","#ff6db6",
+                   "#006ddb", "#b66dff","#009292", "#b6dbff","#920000","#24ff24","#ffb6db")
 
 #Plot change in percentage over groups
-pt_report_is <- ggplot(report_is_chart_renamed, aes(x = group, y = percentage, color = variable, group = variable)) +
-                geom_line() +
-                geom_point() +
-                guides(fill = guide_legend(title = NULL)) +
-                labs(title = "",
-                x = "",
-                y = "Percent of reviews",
-                color = "Variable") +
-                theme_minimal() +
-                theme(legend.title=element_blank()) +
-                scale_color_manual(values = my_palette_14) #+
-                #theme(text = element_text(size=13))
+#This now has a colorblind friendly palette with alternating symbols
+pt_report_is <- ggplot(report_is_chart_renamed, aes(x = group, y = percentage, color = variable, group = variable, shape = variable)) +
+  geom_line() +
+  geom_point(size = 3) +
+  guides(fill = guide_legend(title = NULL)) +
+  labs(title = "",
+       x = "",
+       y = "Percent of reviews",
+       color = "Variable") +
+  theme_minimal() +
+  scale_color_manual(name = "Variable", labels = custom_order_isrp, values = my_palette_11) +
+  scale_shape_manual(name = "Variable", labels = custom_order_isrp, values = rep(c(15, 16), length(unique(report_is_chart_renamed$variable)) / 2 + 1)) + theme(legend.title=element_blank())
 
 ggsave(here("./plots/fig7b.png"), plot = pt_report_is, width = 6, height = 4, units = "in", dpi = 300) 
+
 

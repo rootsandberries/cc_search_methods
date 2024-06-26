@@ -32,6 +32,7 @@ ccmethods_data$search_lag <- difftime(ccmethods_data$pub_date, ccmethods_data$se
 
 #round to integer
 ccmethods_data$search_lag <- round(ccmethods_data$search_lag)
+median(ccmethods_data$search_lag)
 
 #Simple histogram plot of time lags
 pt_hist_timelag <- ggplot(ccmethods_data, aes(x = search_lag)) +
